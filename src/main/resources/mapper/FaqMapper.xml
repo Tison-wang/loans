@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.loan.dao.FaqMapper">
+
+    <sql id="allColumn">
+        id,fk_user_id,name,content,state,create_time
+    </sql>
+
+    <resultMap id="faqResult" type="com.loan.model.Faq">
+        <result property="id" column="id"/>
+        <result property="userId" column="fk_user_id"/>
+        <result property="name" column="name"/>
+        <result property="content" column="content"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="getFaqList" resultMap="faqResult" parameterType="map">
+        select
+        <include refid="allColumn"/>
+        from t_faq where 1 = 1
+        <if test="userId != null">and fk_user_id = #{userId}</if>
+        <choose>
+            <when test="state != null">and state = #{state}</when>
+            <otherwise>and state = 1</otherwise>
+        </choose>
+        order by create_time desc
+    </select>
+
+    <select id="getSingleFaq" resultMap="faqResult" parameterType="map">
+        select
+        <include refid="allColumn"/>
+        from t_faq
+        where 1 = 1
+        <if test="id != null">and id = #{id}</if>
+    </select>
+
+    <update id="update" parameterType="map">
+        update t_faq
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime}</if>
+        </set>
+        where state > -1
+        <choose>
+            <when test="userId != null">and fk_user_id = #{userId}</when>
+            <otherwise>and id = #{id}</otherwise>
+        </choose>
+    </update>
+
+    <insert id="insert" parameterType="com.loan.model.LoanInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into t_faq(fk_user_id,name,content,state,create_time)
+        values(
+        #{userId,jdbcType=INTEGER},
+        #{name,jdbcType=VARCHAR},
+        #{content,jdbcType=VARCHAR},
+        #{state,jdbcType=INTEGER},
+        #{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <insert id="batchInsert" parameterType="list">
+        insert into t_faq(fk_user_id,name,content,state,create_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.userId,jdbcType=INTEGER},
+            #{item.name,jdbcType=VARCHAR},
+            #{item.content,jdbcType=VARCHAR},
+            #{item.state,jdbcType=INTEGER},
+            #{item.createTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

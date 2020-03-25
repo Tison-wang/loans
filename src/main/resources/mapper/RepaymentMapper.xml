@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loan.dao.RepaymentMapper">
+    <resultMap id="BaseResultMap" type="com.loan.model.Repayment">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="fk_user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="fk_loan_id" jdbcType="INTEGER" property="loanId"/>
+        <result column="loan_no" jdbcType="VARCHAR" property="loanNo"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="current_period" jdbcType="INTEGER" property="currentPeriod"/>
+        <result column="total_period" jdbcType="INTEGER" property="totalPeriod"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, fk_user_id,fk_loan_id,loan_no,amount,current_period,total_period,state,create_time,modify_time
+    </sql>
+    <select id="selectSingle" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_repayment
+        where 1 = 1
+        <choose>
+            <when test="userId != null">and fk_user_id = #{userId}</when>
+            <when test="loanId 1= null">and fk_loan_id = #{loanId}</when>
+            <otherwise>and id = #{id,jdbcType=INTEGER}</otherwise>
+        </choose>
+    </select>
+    <select id="selectList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_repayment
+        where state > -1
+        <choose>
+            <when test="loanId != null">and fk_loan_id = #{loanId}</when>
+            <otherwise>and fk_user_id = #{userId}</otherwise>
+        </choose>
+        order by create_time
+    </select>
+    <insert id="insert" parameterType="com.loan.model.Repayment">
+        insert into t_repayment (fk_user_id,fk_loan_id,loan_no,amount,current_period,total_period,state,create_time)
+        values
+        (#{userId,jdbcType=INTEGER},#{loanId,jdbcType=INTEGER},#{loanNo,jdbcType=VARCHAR},#{amount,jdbcType=DECIMAL},
+        #{currentPeriod,jdbcType=INTEGER},#{totalPeriod,jdbcType=INTEGER},#{state,jdbcType=INTEGER},#{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <update id="update" parameterType="map">
+        update t_repayment
+        <set>
+            <if test="amount != null">
+                amount = #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="currentPeriod != null">
+                current_period = #{currentPeriod,jdbcType=INTEGER},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

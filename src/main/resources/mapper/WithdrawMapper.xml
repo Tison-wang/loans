@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loan.dao.WithdrawMapper">
+    <resultMap id="BaseResultMap" type="com.loan.model.Withdraw">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="fk_user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, fk_user_id, amount, state, create_time
+    </sql>
+    <select id="selectSingle" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_withdraw
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_withdraw
+        where state > -1
+        <if test="state != null or state == 0">and state = #{state}</if>
+        <if test="userId != null">and fk_user_id = #{userId}</if>
+        order by create_time
+    </select>
+    <insert id="insert" parameterType="com.loan.model.Withdraw">
+        insert into t_withdraw (fk_user_id,amount,state,create_time)
+        values
+        (#{userId,jdbcType=INTEGER},#{amount,jdbcType=DECIMAL},#{state,jdbcType=INTEGER},#{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <update id="update" parameterType="map">
+        update t_withdraw
+        <set>
+            <if test="amount != null">
+                amount = #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where 1 = 1
+        <if test="userId != null">and fk_user_id = #{userId,jdbcType=INTEGER}</if>
+        <if test="updateState != null or updateState == 0">and state = #{updateState,jdbcType=INTEGER}</if>
+        <if test="id != null">and id = #{id,jdbcType=INTEGER}</if>
+    </update>
+</mapper>

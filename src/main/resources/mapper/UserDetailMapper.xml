@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.loan.dao.UserDetailMapper">
+    <sql id="allColumn">
+        id,fk_user_id,name,id_card_number,id_card_front_image,id_card_reverse_image,id_card_hold_image,current_address,
+        bank_name,bank_card_number,create_time,monthly_income,link_name1,mobile1,relation1,link_name2,mobile2,relation2
+    </sql>
+
+    <resultMap id="userDetailResult" type="com.loan.model.UserDetail">
+        <result property="id" column="id"/>
+        <result property="userId" column="fk_user_id"/>
+        <result property="name" column="name"/>
+        <result property="idCardNumber" column="id_card_number"/>
+        <result property="idCardFrontImage" column="id_card_front_image"/>
+        <result property="idCardReverseImage" column="id_card_reverse_image"/>
+        <result property="idCardHoldImage" column="id_card_hold_image"/>
+        <result property="currentAddress" column="current_address"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankCardNumber" column="bank_card_number"/>
+        <result property="createTime" column="create_time"/>
+        <result property="monthlyIncome" column="monthly_income"/>
+        <result property="linkName1" column="link_name1"/>
+        <result property="mobile1" column="mobile1"/>
+        <result property="relation1" column="relation1"/>
+        <result property="linkName2" column="link_name2"/>
+        <result property="mobile2" column="mobile2"/>
+        <result property="relation2" column="relation2"/>
+    </resultMap>
+
+    <select id="getUserDetail" resultMap="userDetailResult" parameterType="int">
+        select
+        <include refid="allColumn"/>
+        from t_user_detail where fk_user_id = #{userId}
+    </select>
+
+    <update id="update" parameterType="map">
+        update t_user_detail
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="idCardNumber != null and idCardNumber != ''">id_card_number = #{idCardNumber},</if>
+            <if test="idCardFrontImage != null and idCardFrontImage != ''">
+                id_card_front_image = #{idCardFrontImage},
+            </if>
+            <if test="idCardReverseImage != null and idCardReverseImage != ''">
+                id_card_reverse_image = #{idCardReverseImage},
+            </if>
+            <if test="idCardHoldImage != null and idCardHoldImage != ''">id_card_hold_image = #{idCardHoldImage},</if>
+            <if test="idCardNumber != null and idCardNumber != ''">id_card_number = #{idCardNumber},</if>
+            <if test="currentAddress != null and currentAddress != ''">current_address = #{currentAddress},</if>
+            <if test="bankName != null and bankName != ''">bank_name = #{bankName},</if>
+            <if test="bankCardNumber != null and bankCardNumber != ''">bank_card_number = #{bankCardNumber},</if>
+            <if test="monthlyIncome != null and monthlyIncome != ''">monthly_income = #{monthlyIncome},</if>
+            <if test="linkName1 != null and linkName1 != ''">link_name1 = #{linkName1},</if>
+            <if test="mobile1 != null and mobile1 != ''">mobile1 = #{mobile1},</if>
+            <if test="relation1 != null and relation1 != ''">relation1 = #{relation1},</if>
+            <if test="linkName2 != null and linkName2 != ''">link_name2 = #{linkName2},</if>
+            <if test="mobile2 != null and mobile2 != ''">mobile2 = #{mobile2},</if>
+            <if test="relation2 != null and relation2 != ''">relation2 = #{relation2},</if>
+        </set>
+        where 1 = 1
+        <choose>
+            <when test="userId != null">and fk_user_id = #{userId}</when>
+            <otherwise>and id = #{id}</otherwise>
+        </choose>
+    </update>
+
+    <insert id="insert" parameterType="com.loan.model.UserDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        t_user_detail(fk_user_id,name,id_card_number,id_card_front_image,id_card_reverse_image,id_card_hold_image,
+        current_address,bank_name,bank_card_number,create_time,monthly_income,link_name1,mobile1,relation1,
+        link_name2,mobile2,relation2)
+        values(
+        #{userId, jdbcType=INTEGER},
+        #{name, jdbcType=VARCHAR},
+        #{idCardNumber, jdbcType=VARCHAR},
+        #{idCardFrontImage, jdbcType=VARCHAR},
+        #{idCardReverseImage, jdbcType=VARCHAR},
+        #{idCardHoldImage, jdbcType=VARCHAR},
+        #{currentAddress, jdbcType=VARCHAR},
+        #{bankName, jdbcType=VARCHAR},
+        #{bankCardNumber, jdbcType=VARCHAR},
+        #{createTime, jdbcType=TIMESTAMP},
+        #{monthlyIncome, jdbcType=VARCHAR},
+        #{linkName1, jdbcType=VARCHAR},
+        #{mobile1, jdbcType=VARCHAR},
+        #{relation1, jdbcType=VARCHAR},
+        #{linkName2, jdbcType=VARCHAR},
+        #{mobile2, jdbcType=VARCHAR},
+        #{relation2,jdbcType=VARCHAR}
+        )
+    </insert>
+</mapper>

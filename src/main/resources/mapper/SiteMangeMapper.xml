@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.loan.dao.SiteManagerMapper">
+
+    <resultMap id="siteManageResult" type="com.loan.vo.SiteManageVo">
+        <result property="systemConfigId" column="systemConfigId"/>
+        <result property="admin" column="admin"/>
+        <result property="siteName" column="siteName"/>
+        <result property="domain" column="domain"/>
+        <result property="smsSign" column="smsSign"/>
+        <result property="indexTemplate" column="indexTemplate"/>
+        <result property="siteClosedStatus" column="siteClosedStatus"/>
+        <result property="totalSmsCount" column="totalSmsCount"/>
+        <result property="costSmsCount" column="costSmsCount"/>
+    </resultMap>
+
+    <select id="getList" resultMap="siteManageResult" parameterType="map">
+        select config.id "systemConfigId",user.user_name "admin",config.site_name "siteName",config.domain "domain",
+        config.sms_sign "smsSign",config.index_template "indexTemplate",config.close_status "siteClosedStatus",
+        config.total_sms_count "totalSmsCount",config.cost_sms_count "costSmsCount"
+        from t_sys_config config
+        inner join
+        t_user user on config.fk_owner_id = user.id and user.state > -1 and user.type > 0
+        where 1 = 1
+        <if test="searchKey != null and searchKey">
+            and (
+            config.site_name like concat('%',#{searchKey},'%')
+            or
+            config.domain like concat('%',#{searchKey},'%')
+            or
+            user.user_name like concat('%',#{searchKey},'%')
+            )
+        </if>
+        <if test="systemConfigId != null">
+            and config.id = #{systemConfigId}
+        </if>
+        order by create_time desc
+    </select>
+</mapper>

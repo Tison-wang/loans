@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.loan.dao.UserMapper">
+    <sql id="allColumn">
+        user.id,user.fk_owner_id,user.user_name,user.password,user.type,user.state,user.create_time,user.last_login_time,
+        amount,freeze_amount
+    </sql>
+
+    <sql id="userDetailColumn">
+        userDetail.id "detailId",userDetail.fk_user_id,userDetail.name,userDetail.id_card_number,
+        userDetail.id_card_front_image,userDetail.id_card_reverse_image,userDetail.id_card_hold_image,
+        userDetail.current_address,userDetail.bank_name,userDetail.bank_card_number,
+        userDetail.monthly_income,userDetail.link_name1,userDetail.mobile1,userDetail.relation1,
+        userDetail.link_name2,userDetail.mobile2,userDetail.relation2
+    </sql>
+
+    <resultMap id="userResult" type="com.loan.model.User">
+        <result property="id" column="id"/>
+        <result property="ownerId" column="fk_owner_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="password" column="password"/>
+        <result property="type" column="type"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="amount" column="amount"/>
+        <result property="freezeAmount" column="freeze_amount"/>
+    </resultMap>
+
+    <resultMap id="includeUserDetailResult" type="com.loan.model.User" extends="userResult">
+        <result property="detail.id" column="detailId"/>
+        <result property="detail.userId" column="fk_user_id"/>
+        <result property="detail.name" column="name"/>
+        <result property="detail.idCardNumber" column="id_card_number"/>
+        <result property="detail.idCardFrontImage" column="id_card_front_image"/>
+        <result property="detail.idCardReverseImage" column="id_card_reverse_image"/>
+        <result property="detail.idCardHoldImage" column="id_card_hold_image"/>
+        <result property="detail.currentAddress" column="current_address"/>
+        <result property="detail.bankName" column="bank_name"/>
+        <result property="detail.bankCardNumber" column="bank_card_number"/>
+        <result property="detail.monthlyIncome" column="monthly_income"/>
+        <result property="detail.linkName1" column="link_name1"/>
+        <result property="detail.mobile1" column="mobile1"/>
+        <result property="detail.relation1" column="relation1"/>
+        <result property="detail.linkName2" column="link_name2"/>
+        <result property="detail.mobile2" column="mobile2"/>
+        <result property="detail.relation2" column="relation2"/>
+    </resultMap>
+
+    <select id="getSingleUser" resultMap="includeUserDetailResult" parameterType="map">
+        select
+        <include refid="allColumn"/>,
+        <include refid="userDetailColumn"/>
+        from t_user user left join t_user_detail userDetail on user.id = userDetail.fk_user_id
+        where user.state > -1
+        <if test="id != null">and user.id = #{id}</if>
+        <if test="ownerId != null">and user.fk_owner_id = #{ownerId}</if>
+        <if test="userName != null">and user.user_name = #{userName}</if>
+        <if test="password != null">and user.password = #{password}</if>
+    </select>
+
+    <select id="getUserList" resultMap="includeUserDetailResult" parameterType="map">
+        select
+        <include refid="allColumn"/>,
+        <include refid="userDetailColumn"/>
+        from t_user user left join t_user_detail userDetail on user.id = userDetail.fk_user_id where user.state > -1
+        <if test="ownerId != null">and fk_owner_id = #{ownerId}</if>
+        <if test="userName != null and userName != ''">and user_name = #{userName}</if>
+        <if test="searchName != null and searchName != ''">
+            and (user_name like concat("%",#{searchName},"%") or name like concat("%",#{searchName},"%"))
+        </if>
+        <if test="type != null">and type = #{type}</if>
+        <if test="excludeType != null">and type != #{excludeType}</if>
+        <if test="state != null or state == 0">and state = #{state}</if>
+        order by user.create_time desc
+    </select>
+
+    <update id="update" parameterType="map">
+        update t_user
+        <set>
+            <if test="addOwnerId != null">fk_owner_id = #{addOwnerId},</if>
+            <if test="userName != null and userName != ''">user_name = #{userName},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="state != null or state == 0">state = #{state},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="freezeAmount != null">freeze_amount = #{freezeAmount},</if>
+            <if test="subtractAmount != null">amount = amount - #{subtractAmount},</if>
+            <if test="addFreezeAmount != null">freeze_amount = freeze_amount + #{addFreezeAmount},</if>
+            <if test="addAmount != null">amount = amount + #{addAmount},</if>
+            <if test="subtractFreezeAmount != null">freeze_amount = freeze_amount - #{subtractFreezeAmount},</if>
+        </set>
+        where 1 = 1
+        <choose>
+            <when test="ownerId != null">and fk_owner_id = #{ownerId}</when>
+            <when test="updateUserName != null">and user_name = #{updateUserName}</when>
+            <otherwise>and id = #{id}</otherwise>
+        </choose>
+    </update>
+
+    <insert id="insert" parameterType="com.loan.model.User" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        t_user(fk_owner_id,user_name,password,type,state,create_time,last_login_time)
+        values(
+        #{ownerId, jdbcType=INTEGER},
+        #{userName, jdbcType=VARCHAR},
+        #{password, jdbcType=VARCHAR},
+        #{type, jdbcType=INTEGER},
+        #{state, jdbcType=INTEGER},
+        #{createTime, jdbcType=TIMESTAMP},
+        #{lastLoginTime, jdbcType=TIMESTAMP}
+        )
+    </insert>
+</mapper>

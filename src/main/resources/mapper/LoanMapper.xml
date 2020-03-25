@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.loan.dao.LoanMapper">
+
+    <sql id="allColumn">
+        loan.id,loan.fk_user_id,loan.fk_owner_id,loan.no,loan.amount,loan.loan_term,use_for,repay_amount_of_month,
+        loan.comment,loan.state,loan.create_time,loan.current_withdraw_amount,total_withdraw_amount,state_desc,
+        transfer_voucher,contract,service_charge_rate
+    </sql>
+
+    <sql id="userInfoColumn">
+        user.user_name,userDetail.name
+    </sql>
+
+    <resultMap id="loanInfoResult" type="com.loan.model.LoanInfo">
+        <result property="id" column="id"/>
+        <result property="userId" column="fk_user_id"/>
+        <result property="ownerId" column="fk_owner_id"/>
+        <result property="no" column="no"/>
+        <result property="amount" column="amount"/>
+        <result property="loanTerm" column="loan_term"/>
+        <result property="useFor" column="use_for"/>
+        <result property="repayAmountOfMonth" column="repay_amount_of_month"/>
+        <result property="currentWithdrawAmount" column="current_withdraw_amount"/>
+        <result property="totalWithdrawAmount" column="total_withdraw_amount"/>
+        <result property="comment" column="comment"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+        <result property="stateDesc" column="state_desc"/>
+        <result property="transferVoucher" column="transfer_voucher"/>
+        <result property="serviceChargeRate" column="service_charge_rate"/>
+    </resultMap>
+
+    <resultMap id="loanInfoVoResult" type="com.loan.vo.LoanInfoVo" extends="loanInfoResult">
+        <result property="userInfo.userName" column="user_name"/>
+        <result property="userInfo.detail.name" column="name"/>
+    </resultMap>
+
+    <select id="getCountByUserId" resultType="int">
+        select count(*) from t_loan_info where fk_user_id = #{userId} and state > -1
+    </select>
+
+    <select id="getLoanInfoVoList" resultMap="loanInfoVoResult" parameterType="map">
+        select
+        <include refid="allColumn"/>,
+        <include refid="userInfoColumn"/>
+        from t_loan_info loan inner join t_user user on loan.fk_user_id = user.id
+        left join t_user_detail userDetail on user.id = userDetail.fk_user_id
+        where loan.state >= 0
+        <if test="ownerId != null">and loan.fk_owner_id = #{ownerId}</if>
+        <if test="userId != null">and fk_user_id = #{userId}</if>
+        <if test="searchName != null and searchName != ''">
+            and (loan.no like concat("%",#{searchName},"%") or user.user_name like concat("%",#{searchName},"%") or
+            userDetail.name like concat("%",#{searchName},"%"))
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="getLoanInfoList" resultMap="loanInfoResult" parameterType="map">
+        select
+        <include refid="allColumn"/>
+        from t_loan_info loan
+        where loan.state >= 0
+        <if test="userId != null">and fk_user_id = #{userId}</if>
+        <if test="undone != null">and state &lt; 99</if>
+        order by create_time desc
+    </select>
+
+    <select id="getSingleLoanInfo" resultMap="loanInfoResult" parameterType="map">
+        select
+        <include refid="allColumn"/>
+        from t_loan_info loan
+        where 1 = 1
+        <if test="id != null">
+            and id = #{id}
+        </if>
+    </select>
+
+    <update id="update" parameterType="map">
+        update t_loan_info
+        <set>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="loanTerm != null">loan_term = #{loanTerm},</if>
+            <if test="useFor != null and useFor != ''">use_for = #{useFor},</if>
+            <if test="repayAmountOfMonth != null">repay_amount_of_month = #{repayAmountOfMonth},</if>
+            <if test="paymentPic != null and paymentPic != ''">payment_pic = #{paymentPic},</if>
+            <if test="comment != null and comment != ''">comment = #{comment},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+            <if test="modifier != null">fk_modifier = #{modifier},</if>
+            <if test="currentWithdrawAmount != null">current_withdraw_amount = #{currentWithdrawAmount},</if>
+            <if test="addTotalWithdrawAmount != null">
+                total_withdraw_amount = total_withdraw_amount + #{addTotalWithdrawAmount},
+            </if>
+            <if test="stateDesc != null and stateDesc != ''">state_desc = #{stateDesc},</if>
+            <if test="transferVoucher != null and transferVoucher != ''">transfer_voucher = #{transferVoucher},</if>
+            <if test="setTransferVoucherNull != null">transfer_voucher = null,</if>
+            <if test="contract != null and contract != ''">contract = #{contract},</if>
+        </set>
+        where id = #{id}
+        <if test="ownerId != null">and fk_owner_id = #{ownerId}</if>
+    </update>
+
+    <insert id="insert" parameterType="com.loan.model.LoanInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        t_loan_info(fk_user_id,fk_owner_id,no,amount,loan_term,use_for,repay_amount_of_month,comment,state,create_time,
+        state_desc,contract,service_charge_rate)
+        values(
+        #{userId,jdbcType=INTEGER},
+        #{ownerId,jdbcType=INTEGER},
+        #{no,jdbcType=VARCHAR},
+        #{amount,jdbcType=DECIMAL},
+        #{loanTerm,jdbcType=INTEGER},
+        #{useFor,jdbcType=VARCHAR},
+        #{repayAmountOfMonth,jdbcType=DECIMAL},
+        #{comment,jdbcType=VARCHAR},
+        #{state,jdbcType=INTEGER},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{stateDesc,jdbcType=VARCHAR},
+        #{contract,jdbcType=VARCHAR},
+        #{serviceChargeRate,jdbcType=DOUBLE}
+        )
+    </insert>
+</mapper>

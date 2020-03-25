@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.loan.dao.SystemConfigMapper">
+
+    <sql id="allColumn">
+        id,fk_owner_id,domain,site_name,site_title,site_keyword,site_desc,close_status,closed_tips,min_loan,max_loan,
+        default_loan,allow_loan_months,default_loan_month,service_charge_rate,repayment_date,statistical_code,record_info,
+        sms_sign,total_sms_count,cost_sms_count,index_template,bottom_content
+    </sql>
+
+    <resultMap id="systemConfigResult" type="com.loan.model.SystemConfig">
+        <result property="id" column="id"/>
+        <result property="ownerId" column="fk_owner_id"/>
+        <result property="domain" column="domain"/>
+        <result property="siteName" column="site_name"/>
+        <result property="siteTitle" column="site_title"/>
+        <result property="siteKeyword" column="site_keyword"/>
+        <result property="siteDesc" column="site_desc"/>
+        <result property="closeStatus" column="close_status"/>
+        <result property="closedTips" column="closed_tips"/>
+        <result property="minLoan" column="min_loan"/>
+        <result property="maxLoan" column="max_loan"/>
+        <result property="defaultLoan" column="default_loan"/>
+        <result property="allowLoanMonths" column="allow_loan_months"/>
+        <result property="defaultLoanMonth" column="default_loan_month"/>
+        <result property="serviceChargeRate" column="service_charge_rate"/>
+        <result property="repaymentDate" column="repayment_date"/>
+        <result property="statisticalCode" column="statistical_code"/>
+        <result property="recordInfo" column="record_info"/>
+        <result property="smsSign" column="sms_sign"/>
+        <result property="totalSmsCount" column="total_sms_count"/>
+        <result property="costSmsCount" column="cost_sms_count"/>
+        <result property="indexTemplate" column="index_template"/>
+        <result property="bottomContent" column="bottom_content"/>
+    </resultMap>
+
+    <select id="getSingleSystemConfig" resultMap="systemConfigResult" parameterType="map">
+        select
+        <include refid="allColumn"/>
+        from t_sys_config where status > -1
+        <if test="id != null">and id = #{id}</if>
+        <if test="ownerId != null">and fk_owner_id = #{ownerId}</if>
+        <if test="domain != null and domain != ''">and domain = #{domain}</if>
+    </select>
+
+    <update id="update" parameterType="map">
+        update t_sys_config
+        <set>
+            <if test="domain != null and domain != ''">domain = #{domain},</if>
+            <if test="siteName != null and siteName != ''">site_name = #{siteName},</if>
+            <if test="siteTitle != null and siteTitle != ''">site_title = #{siteTitle},</if>
+            <if test="siteKeyword != null and siteKeyword != ''">site_keyword = #{siteKeyword},</if>
+            <if test="siteDesc != null and siteDesc != ''">site_desc = #{siteDesc},</if>
+            <if test="closeStatus != null or closeStatus == 0">close_status = #{closeStatus},</if>
+            <if test="closedTips != null">closed_tips = #{closedTips},</if>
+            <if test="minLoan != null">min_loan = #{minLoan},</if>
+            <if test="maxLoan != null">max_loan = #{maxLoan},</if>
+            <if test="defaultLoan != null">default_loan = #{defaultLoan},</if>
+            <if test="allowLoanMonths != null and allowLoanMonths != ''">allow_loan_months = #{allowLoanMonths},</if>
+            <if test="defaultLoanMonth != null">default_loan_month = #{defaultLoanMonth},</if>
+            <if test="serviceChargeRate != null">service_charge_rate = #{serviceChargeRate},</if>
+            <if test="repaymentDate != null">repayment_date = #{repaymentDate},</if>
+            <if test="statisticalCode != null">statistical_code = #{statisticalCode},</if>
+            <if test="recordInfo != null and recordInfo != ''">record_info = #{recordInfo},</if>
+            <if test="smsSign != null and smsSign != ''">sms_sign = #{smsSign},</if>
+            <if test="indexTemplate != null and indexTemplate != ''">index_template = #{indexTemplate},</if>
+            <if test="totalSmsCount != null">total_sms_count = #{totalSmsCount},</if>
+            <if test="costSmsCount != null">cost_sms_count = #{costSmsCount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="bottomContent != null and bottomContent != ''">bottom_content = #{bottomContent},</if>
+        </set>
+        where status > -1
+        <choose>
+            <when test="ownerId != null">and fk_owner_id = #{ownerId}</when>
+            <otherwise>and id = #{id}</otherwise>
+        </choose>
+    </update>
+
+    <insert id="insert" parameterType="com.loan.model.SystemConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        t_sys_config(fk_owner_id,domain,site_name,site_title,site_keyword,site_desc,close_status,closed_tips,min_loan,
+        max_loan,default_loan,allow_loan_months,default_loan_month,service_charge_rate,repayment_date,statistical_code,
+        record_info)
+        values(
+        #{ownerId,jdbcType=INTEGER},
+        #{domain,jdbcType=VARCHAR},
+        #{siteName,jdbcType=VARCHAR},
+        #{siteTitle,jdbcType=VARCHAR},
+        #{siteKeyword,jdbcType=VARCHAR},
+        #{siteDesc,jdbcType=VARCHAR},
+        #{closeStatus,jdbcType=TINYINT},
+        #{closedTips,jdbcType=VARCHAR},
+        #{minLoan,jdbcType=DECIMAL},
+        #{maxLoan,jdbcType=DECIMAL},
+        #{defaultLoan,jdbcType=DECIMAL},
+        #{allowLoanMonths,jdbcType=VARCHAR},
+        #{defaultLoanMonth,jdbcType=INTEGER},
+        #{serviceChargeRate,jdbcType=DOUBLE},
+        #{repaymentDate,jdbcType=INTEGER},
+        #{statisticalCode,jdbcType=VARCHAR},
+        #{recordInfo,jdbcType=VARCHAR}
+        )
+    </insert>
+</mapper>

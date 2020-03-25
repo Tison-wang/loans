@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loan.dao.WebSiteConfigMapper">
+    <resultMap id="BaseResultMap" type="com.loan.model.WebSiteConfig">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="sms_sign_name" jdbcType="VARCHAR" property="smsSignName"/>
+        <result column="sms_access_key_id" jdbcType="VARCHAR" property="smsAccessKeyId"/>
+        <result column="sms_access_secret" jdbcType="VARCHAR" property="smsAccessSecret"/>
+        <result column="open_code_status" jdbcType="TINYINT" property="openCodeStatus"/>
+        <result column="site_count_limit" jdbcType="TINYINT" property="siteCountLimit"/>
+        <result column="code_sms_url" jdbcType="VARCHAR" property="codeSmsUrl"/>
+        <result column="code_sms_user_id" jdbcType="VARCHAR" property="codeSmsUserId"/>
+        <result column="code_sms_account" jdbcType="VARCHAR" property="codeSmsAccount"/>
+        <result column="code_sms_password" jdbcType="VARCHAR" property="codeSmsPassword"/>
+        <result column="notify_sms_url" jdbcType="VARCHAR" property="notifySmsUrl"/>
+        <result column="notify_sms_user_id" jdbcType="VARCHAR" property="notifySmsUserId"/>
+        <result column="notify_sms_account" jdbcType="VARCHAR" property="notifySmsAccount"/>
+        <result column="notify_sms_password" jdbcType="VARCHAR" property="notifySmsPassword"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id,sms_sign_name,sms_access_key_id,sms_access_secret,open_code_status,site_count_limit,
+        code_sms_url,code_sms_user_id,code_sms_account,code_sms_password,
+        notify_sms_url,notify_sms_user_id,notify_sms_account,notify_sms_password
+    </sql>
+    <select id="select" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_website_config
+    </select>
+
+    <update id="update" parameterType="com.loan.model.WebSiteConfig">
+        update t_website_config
+        <set>
+            <if test="smsSignName != null">sms_sign_name = #{smsSignName,jdbcType=VARCHAR},</if>
+            <if test="smsAccessKeyId != null">sms_access_key_id = #{smsAccessKeyId,jdbcType=VARCHAR},</if>
+            <if test="smsAccessSecret != null">sms_access_secret = #{smsAccessSecret,jdbcType=VARCHAR},</if>
+            <if test="openCodeStatus != null">open_code_status = #{openCodeStatus,jdbcType=TINYINT},</if>
+            <if test="siteCountLimit != null">site_count_limit = #{siteCountLimit,jdbcType=TINYINT},</if>
+            <if test="codeSmsUrl != null">code_sms_url = #{codeSmsUrl,jdbcType=VARCHAR},</if>
+            <if test="codeSmsUserId != null">code_sms_user_id = #{codeSmsUserId,jdbcType=VARCHAR},</if>
+            <if test="codeSmsAccount != null">code_sms_account = #{codeSmsAccount,jdbcType=VARCHAR},</if>
+            <if test="codeSmsPassword != null">code_sms_password = #{codeSmsPassword,jdbcType=VARCHAR},</if>
+            <if test="notifySmsUrl != null">notify_sms_url = #{notifySmsUrl,jdbcType=VARCHAR},</if>
+            <if test="notifySmsUserId != null">notify_sms_user_id = #{notifySmsUserId,jdbcType=VARCHAR},</if>
+            <if test="notifySmsAccount != null">notify_sms_account = #{notifySmsAccount,jdbcType=VARCHAR},</if>
+            <if test="notifySmsPassword != null">notify_sms_password = #{notifySmsPassword,jdbcType=VARCHAR},</if>
+        </set>
+    </update>
+</mapper>
