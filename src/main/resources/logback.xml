@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
     <!--控制台日志输出配置-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!--对输出日志进行格式化-->
         <encoder>
-            <!-- %d日期,%p日志级别,%file文件名,%line所在行数,%m输出的信息,%n换行 -->
-            <pattern>%d %p (%file:%line\)- %m%n</pattern>
+            <!-- %d日期,%p日志级别,%thread线程名,%file文件名,%line所在行数,%m输出的信息,%n换行 -->
+            <pattern>%d %p [%thread](%file:%line\)- %m%n</pattern>
             <!--字符编码-->
             <charset>UTF-8</charset><!--此处设置字符集-->
         </encoder>
     </appender>
-    <!--指定日志输出等级-->
-    <root level="DEBUG">
-        <appender-ref ref="STDOUT"/>
-    </root>
 
     <!--日志文件配置-->
     <appender name="mylog" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -33,7 +30,14 @@
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
     </appender>
-    <logger name="com.junecs" level="INFO">
+
+    <logger name="com.loan" level="INFO"/>
+    <logger name="org.apache.zookeeper" level="INFO"/>
+
+    <!--指定日志输出等级-->
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
         <appender-ref ref="mylog"/>
-    </logger>
+    </root>
+
 </configuration>
