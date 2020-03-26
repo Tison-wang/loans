@@ -6,10 +6,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement // 开启事务
-public class LoanApplication {
+public class LoansApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(LoanApplication.class, args);
+        SpringApplication.run(LoansApplication.class, args);
     }
 
 }
