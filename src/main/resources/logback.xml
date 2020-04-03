@@ -31,12 +31,14 @@
         </encoder>
     </appender>
 
-    <logger name="com.loan" level="INFO"/>
-    <logger name="org.apache.activemq" level="INFO"/>
-    <logger name="org.apache.zookeeper" level="INFO"/>
+    <logger name="com.loan" level="INFO" addtivity="false"/>
+    <logger name="org.apache" level="INFO"/>
+    <logger name="com.netflix" level="INFO"/>
+    <logger name="org.apache.activemq" level="INFO" addtivity="false"/>
+    <logger name="org.apache.zookeeper" level="INFO" addtivity="false"/>
 
     <!--指定日志输出等级-->
-    <root level="debug">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="mylog"/>
     </root>
